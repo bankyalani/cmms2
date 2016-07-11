@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+
+	<mvc:annotation-driven />
+	<context:annotation-config />
+
+	<bean id="validator"
+      class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+	<security:global-method-security
+		secured-annotations="enabled" />
+	<mvc:resources mapping="/resources/**" location="/WEB-INF/assets/" />
+	<mvc:resources mapping="/sresources/**" location="/WEB-INF/etc/" />
+
+	<context:annotation-config />
+	<!-- <context:component-scan base-package="com.nibss.cmms" /> -->
+	<context:component-scan base-package="com.nibss.cmms">
+		<context:exclude-filter type="regex"
+			expression="com\.nibss\.cmms\.web\.controllers\..*" />
+	</context:component-scan>
+	
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="file:${cmms.app.config}/app.properties" />
+	</bean>
+
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${smtp.host}" />
+		<property name="port" value="${smtp.port}" />
+		<property name="username" value="${smtp.username}" />
+		<property name="password" value="${smtp.password}" />
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">${smtp.auth}</prop>
+				<prop key="mail.smtp.debug">${smtp.debug}</prop>
+				<prop key="mail.smtp.from">${smtp.from}</prop>
+				<prop key="mail.transport.protocol">${smtp.transport.protocol}</prop>
+				<prop key="mail.smtp.starttls.enable">${smtp.starttls.enable}</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:messages" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+
+	<import resource="/conf/ds.xml" />
+
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.nibss.cmms.domain" />
+
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<!-- <prop key="hibernate.current_session_context_class">thread</prop> -->
+				<prop key="hibernate.enable_lazy_load_no_trans">${hibernate.enable_lazy_load_no_trans}</prop>
+
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="hibernateTransactionManager" />
+	<bean id="hibernateTransactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+		<!-- setting maximum upload size -->
+		<!-- <property name="maxUploadSize" value="250000" /> -->
+
+	</bean>
+
+	<bean id="jacksonMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jacksonMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	
+	<task:scheduled-tasks>
+			<task:scheduled ref="applicationService" method="postTransactions"	cron="${debit.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="moveDailyDueTransactions" cron="${mandate.migration.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="deleteSuspendedMandate" cron="${suspend.mandate.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="updateMandateAdvices" cron="${update.mandate.advices.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="recalculateNextDebitDate" cron="${debit.date.calculator.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="firstTransactionPostingRetry" cron="${first.transaction.retry.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="secondTransactionPostingRetry" cron="${second.transaction.retry.cron}" ></task:scheduled>
+			
+			
+	</task:scheduled-tasks>
+	<task:scheduler id="taskScheduler" pool-size="10"/>
+
+
+	<!-- <bean id="nipaymentImpl" class="com.nibss.cmms.app.service.NIPaymentImpl">
+		<property name="hasher" ref="nipHasher"></property>
+		<property name="xmlConverter" ref="xmlConverter"></property>
+		<property name="nfpBankInterface" ref="nipService"></property>
+	</bean> -->
+	
+	<bean id="xmlConverter" class="com.nibss.util.converters.JAXBConverter" />
+	
+	<bean id="nfpCrypto"  class="com.nibss.nip.crypto.NIPCryptoWS_Service"  >
+		<constructor-arg index="0">
+		<bean class="java.net.URL">
+			<constructor-arg value="${nip.crypto.url}" />	
+		</bean>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="fortreeAuth"  class="com.nibss.ebts.auth.FortressAuth" />
+	
+	<bean id="nfpBankImpl"  class="com.nibss.nip.webservice.NIPInterface_Service" lazy-init="true">
+		<constructor-arg index="0">
+		<bean class="java.net.URL" lazy-init="true">
+			<constructor-arg value="${nip.url}" />	
+		</bean>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="nipWSHelper" class="com.nibss.nip.webservice.impl.NipWebServiceHelper" lazy-init="true">
+		<constructor-arg index="0" ref="nfpBankImpl"/>
+		<constructor-arg index="1" ref="nfpCrypto"/>
+		<constructor-arg index="2" ref="xmlConverter"/>
+		<property name="nibssBankCode" value="999999"></property>
+	</bean>
+</beans>

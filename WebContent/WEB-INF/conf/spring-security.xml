@@ -1,0 +1,91 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+
+	<import resource="ds.xml" />
+	
+	<!-- Security configuration for REST services. -->
+	<security:http pattern="/api/**"
+		authentication-manager-ref="authenticationManager" entry-point-ref="restServicesEntryPoint"
+		create-session="stateless" >
+			<security:http-basic entry-point-ref="restServicesEntryPoint"/>
+			<!-- <security:intercept-url pattern="/api/mandate/create"
+			access="ROLE_BILLER_INITIATOR" /> -->
+	</security:http>
+
+	<security:http use-expressions="true" pattern="/**">
+		<security:access-denied-handler
+			error-page="/error" />
+		<!-- Restrict URLs based on role -->
+		<security:intercept-url pattern="/biller/**"
+			access="hasAnyRole('ROLE_BILLER_INITIATOR','ROLE_BILLER_AUTHORIZER','ROLE_BILLER_ADMINISTRATOR','ROLE_BILLER_AUDITOR')" />
+		<security:intercept-url pattern="/bank/**"
+			access="hasAnyRole('ROLE_BANK_INITIATOR','ROLE_BANK_AUTHORIZER','ROLE_BANK_ADMINISTRATOR','ROLE_BANK_AUDITOR')" />
+		<security:intercept-url pattern="/nibss/**"
+			access="hasAnyRole('ROLE_NIBSS_ADMINISTRATOR')" />
+		<security:intercept-url pattern="/product/**"
+			access="isAuthenticated()" />
+		
+		<security:intercept-url pattern="/login*"
+			access="permitAll" />
+		<security:intercept-url pattern="/resources/**"
+			access="permitAll" />
+		<security:intercept-url pattern="/scommon/**"
+			access="isAuthenticated()" />
+		<security:intercept-url pattern="/sresources/**"
+			access="isAuthenticated()" />
+		<security:intercept-url pattern="/logoutSuccess*"
+			access="permitAll" />
+
+
+		<!-- Override default login and logout pages -->
+		<!-- authentication-success-handler-ref="cMMSAuthenticationSuccessHandler" -->
+		<!-- default-target-url="/" -->
+		<security:form-login login-page="/login"
+			authentication-success-handler-ref="cMMSAuthenticationSuccessHandler"
+			authentication-failure-url="/login?login_error=1" />
+		<security:logout logout-success-url="/login" />
+
+	</security:http>
+
+	
+	<!-- Entry point for REST service. -->
+	<bean id="restServicesEntryPoint" class="com.nibss.cmms.security.RestAuthenticationEntryPoint" />
+	<!-- Filter for REST services. -->
+	<bean id="restServicesFilter"
+		class="com.nibss.cmms.security.RestUsernamePasswordAuthenticationFilter">
+		<property name="postOnly" value="false" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationSuccessHandler" ref="restServicesSuccessHandler" />
+	</bean>
+	<!-- A handler for successful REST service authentication. -->
+	<bean id="restServicesSuccessHandler" class="com.nibss.cmms.security.RestAuthenticationSuccessHandler" />
+
+<!-- password encoder bean -->
+<bean id="myPasswordEncoder" class="com.nibss.cmms.security.Sha1PasswordEncoder" />
+
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider>
+		<security:password-encoder ref="myPasswordEncoder" />
+			<security:jdbc-user-service
+				data-source-ref="dataSource"
+				users-by-username-query="select email as username,password,  case when status=1 then 'true' else 'false' end as enabled  from users where email=?"
+				authorities-by-username-query="select email as username ,concat('ROLE_', upper(replace(roles.ROLE_NAME, ' ', '_')) ) as authorities from users,roles
+            where email = ? and users.role_ROLE_ID=roles.ROLE_ID " />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+
+	<bean class="com.nibss.cmms.security.CMMSAuthenticationSuccessHandler"
+		id="cMMSAuthenticationSuccessHandler">
+	</bean>
+</beans>
+           
+           
+           
+   
+ 
