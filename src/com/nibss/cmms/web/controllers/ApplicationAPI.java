@@ -518,9 +518,66 @@ public class ApplicationAPI extends BaseController implements WebAppConstants {
 		return null;
 	}
 
-	@RequestMapping(value = "/mandate/update", consumes = {
+	@RequestMapping(value = "/mandate/biller/update", consumes = {
 			"application/json" }, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Object> updateMandate(@RequestBody @Valid MandateUpdateRequest mandateUpdateRequest,
+	public ResponseEntity<Object> updateMandateByBiller(@RequestBody @Valid MandateUpdateRequest mandateUpdateRequest,
+			BindingResult result) throws Exception {
+
+		BillerUser user = null;
+		try {
+			user = _authenticateAPICall(mandateUpdateRequest.getApiAuthentication());
+			if (mandateUpdateRequest.getApiAuthentication() == null || user == null) {
+				throw new ServerBusinessException(0, "Authentication Failed");
+			}
+		} catch (Exception e) {
+			logger.error(null, e);
+			throw new ServerBusinessException(0, "An authentication error has occurred");
+		}
+
+		if (result.hasErrors()) {
+			String[] validationErrors = new String[result.getAllErrors().size()];
+			IntStream.range(0, validationErrors.length).forEach(index -> {
+				validationErrors[index] = result.getAllErrors().get(index).getDefaultMessage();
+			});
+			return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
+		}
+		Gson gson = new Gson();
+		String responseCode = SYSTEM_ERROR;
+		JsonArray jsonArray = new JsonArray();
+		List<MandateUpdateRequestDTO> mandateUpdateRequestsDTOs = mandateUpdateRequest.getMandateRequestBean();
+
+		for (MandateUpdateRequestDTO m : mandateUpdateRequestsDTOs) {
+			Mandate mandate = mandateService.getMandateByMandateCode(m.getMandateCode());
+			if (mandate == null) {
+				responseCode = MANDATE_NOT_FOUND;
+			} else {
+				mandate.setPayerAddress(m.getPayerAddress());
+				mandate.setPayerName(m.getPayerName());
+				mandate.setPhoneNumber(m.getPhoneNumber());
+				mandate.setEmail(m.getEmailAddress());
+				mandate.setNarration(m.getNarration());
+				try {
+					mandate.setStatus(setMandateStatus(m.getStatusId(), mandate));
+					mandateService.modifyMandate(mandate);
+
+				} catch (ServerBusinessException e) {
+					logger.error(null, e);
+					responseCode = SYSTEM_ERROR;
+				}
+			}
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("mandateCode", m.getMandateCode());
+			jsonObject.addProperty("status", responseCode);
+			jsonArray.add(jsonObject);
+
+		}
+
+		return new ResponseEntity<>(gson.toJson(jsonArray), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/mandate/bank/update", consumes = {
+			"application/json" }, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> updateMandateByBank(@RequestBody @Valid MandateUpdateRequest mandateUpdateRequest,
 			BindingResult result) throws Exception {
 
 		BillerUser user = null;

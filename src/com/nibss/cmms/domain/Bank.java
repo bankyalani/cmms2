@@ -30,6 +30,15 @@ public class Bank implements java.io.Serializable {
 	
 	private String nipBankCode;
 	
+	private String notificationUrl;
+	public String getNotificationUrl() {
+		return notificationUrl;
+	}
+
+	public void setNotificationUrl(String notificationUrl) {
+		this.notificationUrl = notificationUrl;
+	}
+
 	private Set<Mandate> mandates= new HashSet<>();
 	
 	

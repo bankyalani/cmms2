@@ -6,6 +6,7 @@ package com.nibss.cmms.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -56,11 +57,38 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
     private int kycLevel;
     
     private String apiKey;
+    private String billingMandateCode;
+    private String notificationUrl;
     
+    public String getNotificationUrl() {
+		return notificationUrl;
+	}
+
+	public void setNotificationUrl(String notificationUrl) {
+		this.notificationUrl = notificationUrl;
+	}
+
+	private BigDecimal unitFee;
     //private Set<Mandate> mandates= new HashSet<>();
     
     
-    @Id
+    public BigDecimal getUnitFee() {
+		return unitFee;
+	}
+
+	public void setUnitFee(BigDecimal unitFee) {
+		this.unitFee = unitFee;
+	}
+
+	public String getBillingMandateCode() {
+		return billingMandateCode;
+	}
+
+	public void setBillingMandateCode(String billingMandateCode) {
+		this.billingMandateCode = billingMandateCode;
+	}
+
+	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
 	public Long getId() {

@@ -1,10 +1,10 @@
 package com.nibss.cmms.app.service;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,11 +22,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.nibss.cmms.domain.Biller;
+import com.nibss.cmms.domain.BillingTransaction;
 import com.nibss.cmms.domain.Mandate;
 import com.nibss.cmms.domain.Transaction;
 import com.nibss.cmms.domain.TransactionParam;
+import com.nibss.cmms.domain.WebserviceNotification;
+import com.nibss.cmms.service.BillerService;
+import com.nibss.cmms.service.BillingTransactionService;
 import com.nibss.cmms.service.MandateService;
 import com.nibss.cmms.service.TransactionService;
+import com.nibss.cmms.service.WebserviceNotificationService;
 import com.nibss.cmms.utils.DateUtils;
 import com.nibss.cmms.utils.exception.domain.ServerBusinessException;
 import com.nibss.cmms.web.WebAppConstants;
@@ -52,7 +58,15 @@ public class ApplicationService {
 	private TransactionService transactionService;
 
 	@Autowired
+	private WebserviceNotificationService webserviceNotificationService;
+	@Autowired
+	private BillingTransactionService billingTransactionService;
+
+	@Autowired
 	private MandateService mandateService;
+
+	@Autowired
+	private BillerService billerService;
 
 	@Autowired
 	private NipDAO nipayment;
@@ -561,22 +575,56 @@ public class ApplicationService {
 	}
 
 	/**
-	 * This should run as defined in the ${mandate.billing.cron} in
-	 * app.properties. processes billing on successful transactions from monday
-	 * the week before 00:00:00 till last sunday 23:59:59 This cron shld run
-	 * monday mornings
+	 * This should run as defined in the ${billing.cron} in app.properties.
+	 * processes billing on successful transactions from monday the week before
+	 * 00:00:00 till last sunday 23:59:59 This cron shld run monday mornings
 	 */
 
 	public void postBilling() {
 		logger.info(Thread.currentThread().getName() + ":__Running the transaction posting job__");
+		List<Biller> billers = billerService.getActiveBillers();
 		try {
-			List<Transaction> transactions = transactionService.getTransactions(
-					() -> "from Transaction t where t.status=? and cast(t.dateCreated as date) between ? and ? ",
-					WebAppConstants.PAYMENT_SUCCESSFUL, getLastWeek(Calendar.MONDAY,1), getLastWeek(Calendar.SUNDAY,2));
+			for (Biller biller : billers) {
+				BillingTransaction bt = new BillingTransaction();
+				String sessionId = "";
+				BigDecimal totalBillableAmount = new BigDecimal("0.00");
+				// Transaction.this.getMandate().getProduct().getBiller().getId()
+				Mandate m = mandateService.getMandateByMandateCode(biller.getBillingMandateCode());
+				if (m == null) {
 
-			logger.info("__Size of transactions fetched [" + transactions.size() + "]__ in Billing Transactions()");
+					List<Transaction> transactions = transactionService.getTransactions(
+							() -> "from Transaction t where t.status=? and cast(t.dateCreated as date) between ? and ? and t.mandate.product.biller.id =? ",
+							WebAppConstants.PAYMENT_SUCCESSFUL, getLastWeek(Calendar.MONDAY, 1),
+							getLastWeek(Calendar.SUNDAY, 2), biller.getId());
+					if (transactions != null && transactions.size() > 0) {
+						totalBillableAmount = biller.getUnitFee().multiply(new BigDecimal(transactions.size() + ""));
+						m.setAmount(totalBillableAmount);
+						bt.setBilledAmount(totalBillableAmount);
+						bt.setBillerId(biller.getId());
+						bt.setDateCreated(new Date());
+						bt.setMandateId(m.getId());
+						bt.setTransactionCount(transactions.size());
 
-			// transactionProcessor(transactions);
+						logger.info("__Size of Billable transactions fetched [" + transactions.size()
+								+ "]__ in Billing Transactions() for " + totalBillableAmount.toPlainString());
+						sessionId = SessionUtil.generateSessionID("999", "999");
+						bt.setSessionId(sessionId);
+						bt.setUnitFee(biller.getUnitFee());
+
+						FTSingleDebitResponse ftDebitResponse = new FTSingleDebitResponse();
+						FTSingleCreditResponse ftCreditResponse = new FTSingleCreditResponse();
+						ftDebitResponse = doDirectDebit(m, sessionId);
+						if (ftDebitResponse != null && ftDebitResponse.getResponseCode().equals("00")) {
+							ftCreditResponse = doDirectCredit(m, sessionId);
+						}
+						bt.setCreditResponseCode(ftCreditResponse == null ? "" : ftCreditResponse.getResponseCode());
+						bt.setDebitResponseCode(ftDebitResponse == null ? "" : ftDebitResponse.getResponseCode());
+						billingTransactionService.saveBillingTransaction(bt);
+					}
+
+					totalBillableAmount = null;
+				}
+			}
 
 		} catch (Exception e) {
 			logger.error(null, e);
@@ -584,7 +632,6 @@ public class ApplicationService {
 
 	}
 
-	
 	private Date getLastWeek(int dayOfTheWeek, int beginEnd) {
 		Calendar cal = Calendar.getInstance();
 		cal.setFirstDayOfWeek(Calendar.MONDAY);
@@ -602,6 +649,44 @@ public class ApplicationService {
 		}
 
 		return cal.getTime();
+	}
+
+	/**
+	 * This should run as defined in the ${webservice.biller.notification.cron}
+	 * in app.properties. processes billing on successful transactions from
+	 * monday the week before 00:00:00 till last sunday 23:59:59 This cron shld
+	 * run monday mornings
+	 */
+
+	public void notifyBiller() {
+
+		try {
+			List<WebserviceNotification> webserviceNotifications = webserviceNotificationService
+					.getWebserviceNotifications(
+							() -> "from WebserviceNotification t where t.billerNotified=? and t.billerNotificationCounter and cast(t.dateCreated as date) between ? and ?",
+							0, 5, getLastWeek(Calendar.MONDAY, 1), getLastWeek(Calendar.SUNDAY, 2));
+
+			if (webserviceNotifications != null && webserviceNotifications.size() > 0) {
+
+				for (WebserviceNotification webserviceNotification : webserviceNotifications) {
+					Mandate m=mandateService.getMandateByMandateId(webserviceNotification.getId());
+					switch (webserviceNotification.getNotificationType()) {
+
+					case 1:
+						
+						m.getProduct().getBiller().getNotificationUrl();
+						
+						break;
+					case 2:
+						break;
+					}
+
+				}
+			}
+		} catch (ServerBusinessException e) {
+			// TODO Auto-generated catch block
+			logger.error(null, e);
+		}
 	}
 
 }
