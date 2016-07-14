@@ -57,7 +57,9 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
     private int kycLevel;
     
     private String apiKey;
+    @Column(nullable = true)
     private String billingMandateCode;
+    @Column(nullable = true)
     private String notificationUrl;
     
     public String getNotificationUrl() {

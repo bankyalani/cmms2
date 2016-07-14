@@ -22,7 +22,7 @@ var oTBExample2 = $("#tDataTable").DataTable({
 	 "columns":[
 				 { "data":null,"title": "S/N",defaultContent:"" },
 	             { "data": "mandateCode", "title": "Mandate Code"},
-	             { "data": "status\\.id", "title": "Status" },
+	             { "data": "status\\.id", "title": "Workflow Status" },
 	             { "data": "lastActionBy", "title": "Last Action By"},
 	             { "data": "product\\.biller\\.id", "title": "Biller"},
 	             { "data": "subscriberCode", "title": "Biller Subscriber Reference"},
@@ -36,7 +36,9 @@ var oTBExample2 = $("#tDataTable").DataTable({
 	             { "data": "dateCreated","title":"Date Added"},
 	             { "data": "product\\.biller\\.id","visible":false},
 	             { "data": "dateApproved","visible":false},
-	             { "data":"fixedAmountMandate","visible": false}
+	             { "data":"fixedAmountMandate","visible": false},
+	             { "data": "requestStatus", "title": "Status" },
+	             { "data": "payerName", "title": "Payer Name" }
 		],
 	ajax:{
 		"type": "POST",

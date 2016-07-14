@@ -29,7 +29,7 @@ public class Bank implements java.io.Serializable {
 	private String bankName;
 	
 	private String nipBankCode;
-	
+	@Column(nullable = true)
 	private String notificationUrl;
 	public String getNotificationUrl() {
 		return notificationUrl;

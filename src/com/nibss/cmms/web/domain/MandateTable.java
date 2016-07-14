@@ -59,6 +59,14 @@ public class MandateTable implements Serializable{
 	
 	@JsonProperty("requestStatus")
 	private String requestStatus;
+	private String payerName;
+	public String getPayerName() {
+		return payerName;
+	}
+
+	public void setPayerName(String payerName) {
+		this.payerName = payerName;
+	}
 
 	public String getMandateCode() {
 		return mandateCode;

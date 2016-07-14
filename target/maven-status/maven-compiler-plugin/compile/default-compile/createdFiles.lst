@@ -20,6 +20,7 @@ com\nibss\cmms\utils\MailMessenger$MailType.class
 com\nibss\cmms\web\JQueryDataTableColumn.class
 com\nibss\nfp\webservice\MandateAdviceRequest.class
 com\nibss\cmms\domain\User.class
+com\nibss\cmms\service\WebserviceNotificationService.class
 com\nibss\cmms\utils\exception\IErrorCodes.class
 com\nibss\cmms\web\validation\BillerValidator.class
 com\nibss\cmms\service\TransactionService.class
@@ -46,6 +47,7 @@ com\nibss\cmms\utils\exception\domain\ServerBusinessException.class
 com\nibss\cmms\web\domain\MandateResponse.class
 com\nibss\cmms\utils\FileUtility.class
 com\nibss\nfp\webservice\NIPInterface_Service.class
+com\nibss\cmms\service\BillingTransactionService.class
 com\nibss\cmms\web\domain\FileAttachment.class
 com\nibss\cmms\web\domain\CompanyTable.class
 com\nibss\cmms\domain\MandateStatus.class
@@ -69,6 +71,7 @@ com\nibss\cmms\utils\DateUtils.class
 com\nibss\cmms\web\JQueryDataTableSearch.class
 com\nibss\cmms\web\domain\PaymentResponse.class
 com\nibss\cmms\web\DataTablesRequest.class
+com\nibss\cmms\web\domain\MandateUpdateRequestDTO.class
 com\nibss\cmms\web\validation\AjaxValidatorResponse.class
 com\nibss\nfp\webservice\MandateAdviceResponse.class
 com\nibss\cmms\utils\exception\domain\ChildRecordExistException.class
@@ -76,6 +79,7 @@ com\nibss\cmms\utils\exception\domain\ServerSystemException.class
 com\nibss\cmms\domain\Biller.class
 com\nibss\cmms\domain\BankUser.class
 com\nibss\cmms\dao\HibernateDAOImpl.class
+com\nibss\cmms\domain\BillingTransaction.class
 com\nibss\cmms\web\filters\CacheControlFilter.class
 com\nibss\cmms\domain\APITransaction.class
 com\nibss\cmms\web\PdfBuilder.class
@@ -105,17 +109,21 @@ com\nibss\cmms\domain\Product.class
 com\nibss\cmms\dao\GenericDAO.class
 com\nibss\cmms\domain\Role.class
 com\nibss\cmms\web\controllers\SearchController.class
+com\nibss\cmms\service\RESTNotificationService.class
 com\nibss\cmms\service\RoleService.class
 com\nibss\cmms\service\CompanyService.class
 com\nibss\cmms\web\DataTablesResponse.class
 com\nibss\cmms\service\TransactionResponseService.class
+com\nibss\cmms\web\domain\MandateUpdateRequest.class
 com\nibss\cmms\web\domain\NotificationTable.class
 com\nibss\cmms\domain\Bank.class
 com\nibss\cmms\utils\ExcelUtility$ExcelType.class
+com\nibss\cmms\domain\WebserviceNotification.class
 com\nibss\cmms\web\converters\IndustryEditor.class
 com\nibss\cmms\utils\exception\domain\ObjectNotFoundException.class
 com\nibss\cmms\web\converters\BillerEditor.class
 com\nibss\cmms\web\domain\APIAuthentication.class
+com\nibss\cmms\web\domain\MandateNotificationRequestDTO.class
 com\nibss\cmms\web\validation\UserValidator.class
 com\nibss\cmms\service\NotificationService.class
 com\nibss\cmms\dao\DataFilter.class
@@ -125,5 +133,6 @@ com\nibss\cmms\web\JQueryDataTableRequest.class
 com\nibss\cmms\domain\Company.class
 com\nibss\cmms\web\domain\MandateTable.class
 com\nibss\cmms\service\BillerService.class
+com\nibss\cmms\web\domain\MandateNotificationRequest.class
 com\nibss\cmms\web\controllers\ApplicationAPI.class
 com\nibss\cmms\web\converters\BankEditor.class

@@ -395,6 +395,7 @@ public class BaseController {
 			else{
 				mandateTable.setRequestStatus("Unknown");
 			}
+			mandateTable.setPayerName(mandate.getPayerName());
 			mandateTableArray[index]=mandateTable;
 		});
 		response.setDraw(dtReq.getDraw());
