@@ -11,6 +11,30 @@
 <script
 	src="<c:url value="/resources/js/plugins/timepicker/bootstrap-timepicker.min.js"/>"></script>
 <script>
+
+$(function() {
+	//Date range picker
+	$('#nextDebitDate').daterangepicker({
+		format : 'DD/MM/YYYY',
+		opens:'left',
+		showDropdowns : true,
+		 cancelClass : 'alert-danger',
+		 ranges: {
+	           'Today': [moment(), moment()],
+	           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+	           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+	           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+	           'This Month': [moment().startOf('month'), moment().endOf('month')],
+	           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+	        },
+        buttonClasses: ['btn', 'btn-sm'],
+        applyClass: 'btn-success',
+        cancelClass: 'btn-danger',
+        dateLimit: { months: 2 }
+	});
+});
+
+
 oTBExample2 = $("#tDataTable").DataTable({
 	"procesing" : true,
 	"serverSide" : true,
@@ -23,7 +47,7 @@ oTBExample2 = $("#tDataTable").DataTable({
 	 "columns":[
 				 { "data":null,"title": "S/N",defaultContent:"" },
 	             { "data": "mandateCode", "title": "Mandate Code"},
-	             { "data": "status\\.id", "title": "Status" },
+	             { "data": "status\\.id", "title": "Workflow Status" },
 	             { "data": "product\\.biller\\.id", "title": "Biller"},
 	             { "data": "subscriberCode", "title": "Biller Subscriber Reference"},
 	             { "data": "product\\.id", "title": "Product"},
@@ -33,7 +57,12 @@ oTBExample2 = $("#tDataTable").DataTable({
 	             { "data": "debitStartDate", "title": "Debit Start Date"},
 	             { "data": "debitEndDate", "title": "Debit End Date"},
 	             { "data": "nextDebitDate", "title": "Next Debit Date"},
-	             { "data": "dateCreated","title":"Date Added"}
+	             { "data": "dateCreated","title":"Date Added"},
+	             { "data": "product\\.biller\\.id","visible":false},
+	             { "data": "dateApproved","visible":false},
+	             { "data":"fixedAmountMandate","visible": false},
+	             { "data": "requestStatus", "title": "Status" },
+	             { "data": "payerName", "title": "Payer Name" }
 		],
 	ajax:{
 		"type": "POST",
@@ -102,6 +131,15 @@ oTBExample2 = $("#tDataTable").DataTable({
 			searchT.column(6).search($('#biller').val());
 			doSearch = true;
 		}
+		if ($('#nextDebitDate').val()!="") {
+			searchT.column(11).search($('#nextDebitDate').val());
+			doSearch=true;
+		}
+		if ($('#payerName').val()!="") {
+			searchT.column(17).search($('#payerName').val());
+			doSearch=true;
+		}
+		
 		
 		if ($('#product').val()) {
 			searchT.column(5).search($('#product').val());
@@ -246,6 +284,16 @@ oTBExample2 = $("#tDataTable").DataTable({
 										</c:forEach>
 
 									</select>
+								</div>
+									<div class="col-md-3 form-group">
+									<label for="nextDebitDate">Next Debit Date</label> <input
+										name="nextDebitDate" class="form-control" id="nextDebitDate"
+										type="text" readonly/>
+								</div>
+									<div class="col-md-4 form-group">
+									<label for="payerName">Payer Name</label> <input
+										name="payerName" class="form-control" id="payerName"
+										type="text" />
 								</div>
 								<div class="pull-right form-group">
 									<button type="button" id="resetDT"

@@ -107,6 +107,11 @@ var oTBExample2 = $("#tDataTable").DataTable({
 			searchT.column(4).search($('#biller').val());
 			doSearch = true;
 		}
+		if ($('#payerName').val()!="") {
+			searchT.column(17).search($('#payerName').val());
+			doSearch=true;
+		}
+		
 		
 		if ($('#product').val()) {
 			searchT.column(6).search($('#product').val());
@@ -430,6 +435,11 @@ var oTBExample2 = $("#tDataTable").DataTable({
 
 												</select>
 											</div>
+												<div class="col-md-4 form-group">
+									<label for="payerName">Payer Name</label> <input
+										name="payerName" class="form-control" id="payerName"
+										type="text" />
+								</div>
 											<div class="pull-right form-group">
 												<button type="button" id="resetDT"
 													class="btn btn-danger btn-md hidden">

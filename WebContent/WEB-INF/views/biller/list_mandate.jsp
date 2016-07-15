@@ -141,6 +141,12 @@ oTBExample2 = $("#tDataTable").DataTable({
 			doSearch=true;
 		}
 		
+		if ($('#payerName').val()!="") {
+			searchT.column(17).search($('#payerName').val());
+			doSearch=true;
+		}
+		
+		
 		
 		
 		if ($('#product').val()!="") {
@@ -285,6 +291,11 @@ oTBExample2 = $("#tDataTable").DataTable({
 									<label for="nextDebitDate">Next Debit Date</label> <input
 										name="nextDebitDate" class="form-control" id="nextDebitDate"
 										type="text" readonly/>
+								</div>
+										<div class="col-md-3 form-group">
+									<label for="payerName">Payer Name</label> <input
+										name="payerName" class="form-control" id="payerName"
+										type="text" />
 								</div>
 								<div class="pull-right form-group">
 									<button type="button" id="resetDT"

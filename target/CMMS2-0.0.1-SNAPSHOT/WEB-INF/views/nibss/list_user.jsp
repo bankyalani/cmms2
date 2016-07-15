@@ -175,7 +175,6 @@ $('#tDataTable').on(
 		'a.editor_reset',
 		function(e) {
 			
-			alert('here');
 			e.preventDefault();
 
 			editor.message('Are you sure you wish to reset '+$(this).closest('tr').find('td:nth-child(4)').html()+" ?")
