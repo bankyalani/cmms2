@@ -217,7 +217,37 @@
 							<td><b>Biller Subscriber Reference</b></td>
 							<td>${mandate.subscriberCode}</td>
 						</tr>
-						<tr>
+						<c:choose>
+							<c:when test="${mandate.fixedAmountMandate}">
+								<tr>
+							<td><b>Amount</b></td>
+							<td><fmt:formatNumber type="number" pattern="###,##0.00"
+													value="${mandate.amount }" /> </td>
+						</tr>
+							</c:when>
+							<c:otherwise>
+							 <tr>
+							<td><b>Amount</b></td>
+							<td><fmt:formatNumber type="number" pattern="###,##0.00"
+													value="${mandate.amount }" /> <b>(Variable)</b>
+											</td>
+						</tr>
+								<tr>
+							<td><b>Amount To Debit</b></td>
+							<td>
+							<span id="amountToDebit">
+							<fmt:formatNumber type="number" pattern="###,##0.00"
+														value="${mandate.variableAmount }" />
+							</span>
+						<c:if
+													test="${(mandate.status.id eq BANK_APPROVE_MANDATE) or (mandate.status.id eq BILLER_APPROVE_MANDATE) }">
+						 	<button class="btn btn-xs btn-warning" id="changeAmount">Change Amount</button>
+						 </c:if>
+						 </td>
+						</tr>
+							</c:otherwise>
+						</c:choose>
+						<%-- <tr>
 							<td><b>Amount</b></td>
 							<td><fmt:formatNumber type="number" pattern="###,##0.00"
 											value="${mandate.amount }" /> 
@@ -240,7 +270,7 @@
 						 </c:if>
 						 </td>
 						</tr>
-						</c:if>
+						</c:if> --%>
 						
 						<tr>
 							<td><b>Payer</b></td>
@@ -351,7 +381,7 @@
 		
 					<sec:authorize
 								access="hasAnyRole('ROLE_BILLER_INITIATOR','ROLE_BANK_INITIATOR')">
-						<div class="btn-group" style="width:60%">
+						<div class="btn-group" style="width: 60%">
 						<sec:authorize access="hasAnyRole('ROLE_BILLER_INITIATOR')">
 							<c:if
 											test="${(mandate.status.id eq BILLER_INITIATE_MANDATE or mandate.status.id eq BILLER_REJECT_MANDATE) and (mandate.createdBy.role.id eq 1) }">
@@ -377,16 +407,16 @@
 				
 							<!-- 	<div class=""> -->
 								<c:if
-											test="${mandate.requestStatus eq STATUS_MANDATE_SUSPENDED }">
+										test="${mandate.requestStatus eq STATUS_MANDATE_SUSPENDED }">
 									<a id="actMandate" href="#"
-												class="modal-toggle btn btn-sm btn-success"><i
-												class="icon-mark"></i> Activate</a>
+											class="modal-toggle btn btn-sm btn-success"><i
+											class="icon-mark"></i> Activate</a>
 								</c:if>
 								<c:if test="${mandate.requestStatus eq STATUS_ACTIVE }">
 									<a id="susMandate" href="#"
-												class="modal-toggle btn btn-sm btn-warning"
-												data-toggle="modal" data-modal-title=""><i
-												class="icon-trash"></i> Suspend</a>
+											class="modal-toggle btn btn-sm btn-warning"
+											data-toggle="modal" data-modal-title=""><i
+											class="icon-trash"></i> Suspend</a>
 								</c:if>
 							<!-- 	</div> -->
 							<%-- </form> --%>

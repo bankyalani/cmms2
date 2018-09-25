@@ -30,6 +30,37 @@ public class Bank implements java.io.Serializable {
 	
 	private String nipBankCode;
 	@Column(nullable = true)
+	private String bankUserName;
+	public String getBankUserName() {
+		return bankUserName;
+	}
+
+	public void setBankUserName(String bankUserName) {
+		this.bankUserName = bankUserName;
+	}
+
+	public String getBankPassword() {
+		return bankPassword;
+	}
+
+	public void setBankPassword(String bankPassword) {
+		this.bankPassword = bankPassword;
+	}
+
+	public String getBankPassKey() {
+		return bankPassKey;
+	}
+
+	public void setBankPassKey(String bankPassKey) {
+		this.bankPassKey = bankPassKey;
+	}
+
+	@Column(nullable = true)
+	private String bankPassword;
+	@Column(nullable = true)
+	private String bankPassKey;
+	
+	@Column(nullable = true)
 	private String notificationUrl;
 	public String getNotificationUrl() {
 		return notificationUrl;

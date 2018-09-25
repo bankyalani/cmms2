@@ -24,45 +24,107 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Entity
 @Table(name = "BILLERS")
 public class Biller extends AbstractTimeStampEntity implements Serializable {
-    
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7453947266569689148L;
 
 	private Long id;
+
+	private int status;
+
+	private Bank bank;
+
+	private String accountNumber;
+
+	private String accountName;
+
+	private User createdBy;
+
+	private Company company;
+
+	private MultipartFile slaAttachment;
+
+	private String slaAttachmentPath;
+
+	private String bvn;
+
+	private int kycLevel;
+
+	private String apiKey;
+	@Column(nullable = true)
+	private String billingMandateCode;
+	@Column(nullable = true)
+	private String notificationUrl;
+	@Column(nullable = true)
+	private String billerPassword;
+	@Column(nullable = true)
+	private String billerPassKey;
+	@Column(nullable = true)
+	private String autoApproveOnAPI;
+
+	public String getAutoApproveOnAPI() {
+		return autoApproveOnAPI;
+	}
+
+	public void setAutoApproveOnAPI(String autoApproveOnAPI) {
+		this.autoApproveOnAPI = autoApproveOnAPI;
+	}
+
+	@Column(nullable = true)
+	private String billerUserName;
+
+	@Column(nullable = true)
+	private String mandateStatusNotificationUrl;
+	@Column(nullable = true)
+	private String paymentStatusNotificationUrl;
+
 	
-    private int status;
-    
-    private Bank bank;
-    
-    private String accountNumber;
-    
-    private String accountName;
-    
-    private User createdBy;
-    
-    private Company company;
-    
-    private MultipartFile slaAttachment;
-    
-    private String slaAttachmentPath;
-    
-    private String bvn;
-    
-    private int kycLevel;
-    
-    private String apiKey;
-    @Column(nullable = true)
-    private String billingMandateCode;
-    @Column(nullable = true)
-    private String notificationUrl;
-    
-    public String getNotificationUrl() {
+	public String getMandateStatusNotificationUrl() {
+		return mandateStatusNotificationUrl;
+	}
+
+	public void setMandateStatusNotificationUrl(String mandateStatusNotificationUrl) {
+		this.mandateStatusNotificationUrl = mandateStatusNotificationUrl;
+	}
+
+	public String getPaymentStatusNotificationUrl() {
+		return paymentStatusNotificationUrl;
+	}
+
+	public void setPaymentStatusNotificationUrl(String paymentStatusNotificationUrl) {
+		this.paymentStatusNotificationUrl = paymentStatusNotificationUrl;
+	}
+	
+	public String getBillerPassword() {
+		return billerPassword;
+	}
+
+	public void setBillerPassword(String billerPassword) {
+		this.billerPassword = billerPassword;
+	}
+
+	public String getBillerPassKey() {
+		return billerPassKey;
+	}
+
+	public void setBillerPassKey(String billerPassKey) {
+		this.billerPassKey = billerPassKey;
+	}
+
+	public String getBillerUserName() {
+		return billerUserName;
+	}
+
+	public void setBillerUserName(String billerUserName) {
+		this.billerUserName = billerUserName;
+	}
+
+	public String getNotificationUrl() {
 		return notificationUrl;
 	}
 
@@ -71,10 +133,9 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 	}
 
 	private BigDecimal unitFee;
-    //private Set<Mandate> mandates= new HashSet<>();
-    
-    
-    public BigDecimal getUnitFee() {
+	// private Set<Mandate> mandates= new HashSet<>();
+
+	public BigDecimal getUnitFee() {
 		return unitFee;
 	}
 
@@ -101,7 +162,6 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 		this.id = id;
 	}
 
-	
 	public int getStatus() {
 		return status;
 	}
@@ -110,9 +170,9 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 		this.status = status;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
-	@JoinColumn(referencedColumnName ="bankCode")
+	@JoinColumn(referencedColumnName = "bankCode")
 	public Bank getBank() {
 		return bank;
 	}
@@ -120,17 +180,14 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 	public void setBank(Bank bank) {
 		this.bank = bank;
 	}
-	
 
-	/*@OneToMany(mappedBy="biller", cascade=CascadeType.ALL)  
-	public Set<Mandate> getMandates() {
-		return mandates;
-	}
-
-	public void setMandates(Set<Mandate> mandates) {
-		this.mandates = mandates;
-	}
-*/
+	/*
+	 * @OneToMany(mappedBy="biller", cascade=CascadeType.ALL) public
+	 * Set<Mandate> getMandates() { return mandates; }
+	 * 
+	 * public void setMandates(Set<Mandate> mandates) { this.mandates =
+	 * mandates; }
+	 */
 	public String getAccountNumber() {
 		return accountNumber;
 	}
@@ -147,7 +204,6 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 		this.accountName = accountName;
 	}
 
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	public User getCreatedBy() {
 		return createdBy;
@@ -158,7 +214,7 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 	}
 
 	@OneToOne
-	@JoinColumn(unique=true)
+	@JoinColumn(unique = true)
 	public Company getCompany() {
 		return company;
 	}
@@ -233,7 +289,4 @@ public class Biller extends AbstractTimeStampEntity implements Serializable {
 		this.apiKey = apiKey;
 	}
 
-    
-    
-    
 }

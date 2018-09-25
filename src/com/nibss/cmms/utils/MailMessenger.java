@@ -422,6 +422,7 @@ public class MailMessenger {
 				mandate.getProduct().getName(),
 				mandate.getAmount().toPlainString(),
 				mandate.getBank().getBankName(),
+				mandate.getAccountName(),
 				mandate.getStartDate().toString(),
 				mandate.getEndDate().toString()),true);
 	}
@@ -478,6 +479,7 @@ public class MailMessenger {
 				mandate.getProduct().getName(),
 				mandate.getAmount().toPlainString(),
 				mandate.getBank().getBankName(),
+				mandate.getAccountName(),
 				mandate.getStartDate().toString(),
 				mandate.getEndDate().toString(),
 				mandate.getProduct().getBiller().getCompany().getName(),
@@ -535,6 +537,7 @@ public class MailMessenger {
 				mandate.getProduct().getName(),
 				mandate.getAmount().toPlainString(),
 				mandate.getBank().getBankName(),
+				mandate.getAccountName(),
 				mandate.getStartDate().toString(),
 				mandate.getEndDate().toString()
 				),true);
@@ -592,6 +595,7 @@ public class MailMessenger {
 				mandate.getProduct().getName(),
 				mandate.getAmount().toPlainString(),
 				mandate.getBank().getBankName(),
+				mandate.getAccountName(),
 				mandate.getStartDate().toString(),
 				mandate.getEndDate().toString()
 				),true);

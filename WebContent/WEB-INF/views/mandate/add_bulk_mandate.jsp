@@ -46,7 +46,7 @@
 				<h4>Guidelines for bulk upload</h4>
 				<ul>
 					<li>File must be a of a .zip format</li>
-					<li>The .zip upload must contain only <b>one</b> .xls or .xlxs file with the detials of the mandate</li>
+					<li>The .zip upload must contain only <b>one</b> .xls or .xlxs file with the details of the mandate</li>
 					<li>The corresponding image name must be included in the .zip archive</li>
 					<li>Click <a href='<c:url value="/common/mandate/bulkTemplate"/>'><b>here</b></a> to download a sample upload file</li>
 				</ul>

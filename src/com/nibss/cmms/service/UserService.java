@@ -63,7 +63,7 @@ public class UserService  {
 
 	public User addUser(User user) throws Exception {
 		//hash the password before saving
-		
+		//user.setTokenId(tokenId);
 		return genericDAO.insert(user);
 		
 	}

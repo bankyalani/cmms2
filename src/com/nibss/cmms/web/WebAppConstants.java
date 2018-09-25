@@ -27,6 +27,17 @@ public interface WebAppConstants {
 	public final String ROLE_BANK_AUDITOR="ROLE_BANK_AUDITOR";	
 	public final String ROLE_NIBSS_ADMINISTRATOR="ROLE_NIBSS_ADMINISTRATOR";
 	
+	public final String BILLER_INITIATOR="BILLER INITIATOR";
+	public final String BILLER_ADMINISTRATOR="BILLER ADMINISTRATOR";
+	public final String BILLER_AUDITOR="BILLER AUDITOR";
+	public final String BILLER_AUTHORIZER="BILLER AUTHORIZER";	
+	public final String BANK_INITIATOR="BANK INITIATOR";
+	public final String BANK_AUTHORIZER="BANK AUTHORIZER";
+	public final String BANK_ADMINISTRATOR="BANK ADMINISTRATOR";
+	public final String BANK_AUDITOR="BANK AUDITOR";	
+	public final String NIBSS_ADMINISTRATOR="NIBSS ADMINISTRATOR";
+	
+	
 	
 	
 	/*	

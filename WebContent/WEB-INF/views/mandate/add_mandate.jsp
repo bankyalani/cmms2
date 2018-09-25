@@ -90,7 +90,7 @@
 						</div>
 
 						<div class="form-group col-md-3 required">
-							<form:label for="amount" path="amount">Amount (Naira)
+							<form:label id ="amountLabel" for="amount" path="amount">Amount (Naira)
 							<a data-toggle="tooltip" class="tooltipLink"
 											data-original-title="This is the upper limit amount for Variable frequency">
 									<span class="glyphicon glyphicon-info-sign text-info"></span>
@@ -136,6 +136,22 @@
 										<option value="">--Select--</option>
 										<option value="true">Fixed</option>
 										<option value="false">Variable</option>
+									</select>
+
+						</div>
+						<div class="form-group col-md-4 required">
+							<form:label for="mandateType" path="mandateType">Mandate Type
+							<a data-toggle="tooltip" class="tooltipLink"
+											data-original-title="The purpose for setting up the mandate">
+									<span class="glyphicon glyphicon-info-sign text-info"></span>
+								</a>
+							</form:label>
+							<select id="mandateType" required="required" name="mandateType"
+										class="form-control">
+										<option value="">--Select--</option>
+										<option value="Direct Debit">Direct Debit</option>
+										<option value="Balance Enquiry Only">Balance Enquiry Only</option>
+										<option value="Fund Sweeping and Balance Enquiry">Fund Sweeping and Balance Enquiry</option>
 									</select>
 
 						</div>
@@ -194,17 +210,18 @@
 							<form:label for="accountNumber" path="accountNumber">Account Number</form:label>
 							 <div class="input-group">
 							<form:input type="text" cssClass="form-control" required="true"
-											id="accountNumber" path="accountNumber"/>
+											id="accountNumber" path="accountNumber" />
 							<span class="input-group-btn">
-        <button class="btn btn-success" type="button" id="verify-account-number">Verify!</button>
+        <button class="btn btn-success" type="button"
+												id="verify-account-number">Verify!</button>
       </span>
 										</div>
 						</div>
 						
 						<div class="form-group col-md-4 required">
 							<form:label for="accountName" path="accountName">Account Name</form:label>
-							<form:input type="text" cssClass="form-control" required="true" readonly="true"
-											id="accountName" path="accountName"/>
+							<form:input type="text" cssClass="form-control" required="true"
+										readonly="true" id="accountName" path="accountName" />
 							
 									
 						</div>
@@ -229,7 +246,8 @@
 					</div>
 					<!-- /.box-body -->
 					<div class="box-footer text-right">
-						<button type="submit" class="btn btn-primary disabled" id="submit-mandate">Save</button>
+						<button type="submit" class="btn btn-primary disabled"
+									id="submit-mandate">Save</button>
 
 					</div>
 				</form:form>

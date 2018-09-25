@@ -110,7 +110,7 @@ oTBExample2 = $("#tDataTable").DataTable({
 			doSearch=true;
 		}
 		if ($('#subscriberCode').val()!="") {
-			searchT.column(4).search($('#subscriberCode').val());
+			searchT.column(5).search($('#subscriberCode').val());
 			doSearch=true;
 		}
 			

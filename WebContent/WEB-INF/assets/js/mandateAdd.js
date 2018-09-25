@@ -92,6 +92,15 @@ $(function() {
 	}).trigger('change');
 });
 
+
+$(function() {
+	$('#submit-mandate').on("click", function(e) {
+		
+		var val = $('#amount').val();
+		$('#amount_').prop('value', val !== '' ? val : 0);
+	});
+});
+
 $("a.tooltipLink").tooltip();
 
 $(function(){
@@ -153,5 +162,17 @@ $(function(){
 		});
 		
 		
+	});
+});
+
+$( function() {
+	$('#mandateType').on('change', function(evt) {
+		var selected  = $('option:selected',this).val();
+		if(!selected || $.trim(selected).length === 0)
+			$('#amountLabel').text('Amount');
+		else if(selected.search(/direct debit/i) !== -1)
+			$('#amountLabel').text('Amount');
+		else
+			$('#amountLabel').text('Maximum Amount');
 	});
 });

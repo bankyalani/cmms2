@@ -58,17 +58,39 @@ public 	class MandateRequestDTO implements Serializable {
 		@NotBlank(message="Subscriber Code is mandatory")
 		private String subscriberCode;
 		
-		@NotNull(message="Start Date is mandatory")
+		/*@NotNull(message="Start Date is mandatory")
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyyMMdd")
 		@DateTimeFormat(pattern="yyyyMMdd")
 		@Future(message="Mandate start date must be greater than today")
-		private  Date startDate;
+		private  Date startDate_;*/
 		
-		@NotNull(message="End Date is mandatory")
+		private String startDate;
+		
+		
+		
+		public String getStartDate() {
+			return startDate;
+		}
+
+		public void setStartDate(String startDate) {
+			this.startDate = startDate;
+		}
+
+		/*@NotNull(message="End Date is mandatory")
 		@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyyMMdd")
 		@DateTimeFormat(pattern="yyyyMMdd")
-		private Date endDate;
+		private Date endDate_;*/
 		
+		private String endDate;
+		
+		public String getEndDate() {
+			return endDate;
+		}
+
+		public void setEndDate(String endDate) {
+			this.endDate = endDate;
+		}
+
 		@NotNull(message="Frequency is required")
 		private int frequency;
 		
@@ -138,21 +160,21 @@ public 	class MandateRequestDTO implements Serializable {
 			this.subscriberCode = subscriberCode;
 		}
 
-		public Date getStartDate() {
-			return startDate;
+		/*public Date getStartDate_() {
+			return startDate_;
 		}
 
-		public void setStartDate(Date startDate) {
-			this.startDate = startDate;
+		public void setStartDate_(Date startDate_) {
+			this.startDate_ = startDate_;
 		}
 
-		public Date getEndDate() {
-			return endDate;
+		public Date getEndDate_() {
+			return endDate_;
 		}
 
-		public void setEndDate(Date endDate) {
-			this.endDate = endDate;
-		}
+		public void setEndDate_(Date endDate_) {
+			this.endDate_ = endDate_;
+		}*/
 
 		public int getFrequency() {
 			return frequency;

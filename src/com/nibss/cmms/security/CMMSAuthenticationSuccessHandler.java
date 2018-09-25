@@ -24,28 +24,26 @@ import com.nibss.cmms.web.WebAppConstants;
 import com.nibss.ebts.auth.FortressAuth;
 
 public class CMMSAuthenticationSuccessHandler implements AuthenticationSuccessHandler, WebAppConstants {
-	private static Logger logger= Logger.getLogger(CMMSAuthenticationSuccessHandler.class);
-
+	private static Logger logger = Logger.getLogger(CMMSAuthenticationSuccessHandler.class);
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private FortressAuth fortressAuth;
-	
 
 	private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, 
-			HttpServletResponse response, Authentication authentication) throws IOException {
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication) throws IOException {
 
 		handle(request, response, authentication);
-		//clearAuthenticationAttributes(request);
+		// clearAuthenticationAttributes(request);
 	}
 
-	protected void handle(HttpServletRequest request, 
-			HttpServletResponse response, Authentication authentication) throws IOException {
+	protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+			throws IOException {
 		String targetUrl = determineTargetUrl(authentication, request, response);
 
 		if (response.isCommitted()) {
@@ -56,39 +54,68 @@ public class CMMSAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		redirectStrategy.sendRedirect(request, response, targetUrl);
 	}
 
-	/** Builds the target URL according to the logic defined in the main class Javadoc. */
-	protected String determineTargetUrl(Authentication authentication,HttpServletRequest request,HttpServletResponse response) {
+	/**
+	 * Builds the target URL according to the logic defined in the main class
+	 * Javadoc.
+	 */
+	protected String determineTargetUrl(Authentication authentication, HttpServletRequest request,
+			HttpServletResponse response) {
 
-
-		if(authentication==null ) return null;
-		User user=null;
-		if(request.getSession().getAttribute(CURRENT_USER_USER)==null){
+		if (authentication == null)
+			return null;
+		User user = null;
+		if (request.getSession().getAttribute(CURRENT_USER_USER) == null) {
 
 			try {
-				user=userService.getUserByEmail(authentication.getName());
+				user = userService.getUserByEmail(authentication.getName());
 				int auth = 0;
-				try{
-					if(!request.getParameter("user_token").equals("test"))
-						auth = fortressAuth.authenticate("cmms" + user.getTokenId(), request.getParameter("user_token"));
-					else
-						auth=1;
-				}catch(Exception e){
-					logger.error(null,e);
+				try {
+					if (!request.getParameter("user_token").equals("test")) {
+
+						if (!request.getParameter("user_token").equals("test")) {
+							String userId = "";
+							if (user.getTokenId() != null && !user.getTokenId().trim().equals("")) {
+								userId = user.getTokenId();
+							} else {
+								userId = user.getId().toString();
+							}
+
+							int l = userId.length();
+							if (l < 5) {
+								int m = 0;
+								while (m < 5 - l) {
+									userId = "0" + userId;
+									++m;
+								}
+							}
+
+							auth = fortressAuth.authenticate(userId, request.getParameter("user_token"));
+							logger.info(user.getTokenId());
+
+						}
+					} else {
+						auth = 1;
+					}
+
+				} catch (Exception e) {
+					logger.error(null, e);
 					authentication.setAuthenticated(false);
-					request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,new BadCredentialsException("An error occurred while validating token information. Please try later!"));
+					request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,
+							new BadCredentialsException(
+									"An error occurred while validating token information. Please try later!"));
 					throw e;
 				}
 
-				if(auth!=1){
+				if (auth != 1) {
 					authentication.setAuthenticated(false);
-					Exception e= new BadCredentialsException("Incorrect token provided. Kindly regenerate and try again!");
-					request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION,e);
+					Exception e = new BadCredentialsException(
+							"Incorrect token provided. Kindly regenerate and try again!");
+					request.getSession().setAttribute(WebAttributes.AUTHENTICATION_EXCEPTION, e);
 					throw e;
-					//redirectStrategy.sendRedirect(request, response, "/login?login_error=1");
-					//return null;
+					// redirectStrategy.sendRedirect(request, response,
+					// "/login?login_error=1");
+					// return null;
 				}
-
-
 
 				request.getSession().setAttribute(CURRENT_USER_LAST_LOGIN, user.getLastLoginTime());
 				user.setLastLoginTime(new Date());
@@ -98,10 +125,10 @@ public class CMMSAuthenticationSuccessHandler implements AuthenticationSuccessHa
 			} catch (Exception e) {
 				logger.fatal(e);
 
-				//throw new Exception(e);
+				// throw new Exception(e);
 			}
-		}else{
-			user=(User)request.getSession().getAttribute(CURRENT_USER_USER);
+		} else {
+			user = (User) request.getSession().getAttribute(CURRENT_USER_USER);
 		}
 
 		if (user instanceof BillerUser) {
@@ -109,9 +136,9 @@ public class CMMSAuthenticationSuccessHandler implements AuthenticationSuccessHa
 		} else if (user instanceof BankUser) {
 			return "/bank/";
 		} else {
-			if(user!=null)
+			if (user != null)
 				return "/nibss/";
-			else		
+			else
 				throw new IllegalStateException();
 		}
 
@@ -128,6 +155,7 @@ public class CMMSAuthenticationSuccessHandler implements AuthenticationSuccessHa
 	public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
 		this.redirectStrategy = redirectStrategy;
 	}
+
 	protected RedirectStrategy getRedirectStrategy() {
 		return redirectStrategy;
 	}

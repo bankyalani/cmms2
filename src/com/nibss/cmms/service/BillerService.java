@@ -83,7 +83,7 @@ public class BillerService {
 
 	@Transactional(readOnly=true)
 	public List<Biller> getActiveBillers() {
-		return genericDAO.getList(() -> "from Biller p where p.status=?",
+		return genericDAO.getList(() -> "from Biller p where p.status=? order by p.id",
 				1);
 	}
 
@@ -102,7 +102,8 @@ public class BillerService {
 
 	@Transactional(readOnly=true)
 	public List<Biller> getAllBillers()  throws ServerBusinessException {
-		return genericDAO.getList(Biller.class);
+		//return genericDAO.getList(Biller.class);
+		return genericDAO.getList(()->" from Biller b order by b.id");
 	}
 
 	public List<User> getBillerAdmins(Biller biller) {
@@ -121,7 +122,8 @@ public class BillerService {
 				params.put(String.valueOf(i),mapE.getValue());
 				i++;
 			}
-		query=query.concat(" order by b.id desc");
+		//query=query.concat(" order by b.id desc");
+		query=query.concat(" order by b.company.name");
 		return genericDAO.getPaginatedList(query, params, startIndex, endIndex);
 	}
 

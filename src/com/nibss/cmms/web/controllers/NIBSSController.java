@@ -1,5 +1,6 @@
 package com.nibss.cmms.web.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -253,7 +257,9 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 				company.setStatus(STATUS_ACTIVE);
 				company.setCreatedBy(getCurrentUser(request));
 				company.setDateCreated(new Date());
+				company.setDateModified(new Date());
 				companyService.addNewCompany(company);
+				
 				res.setStatus("SUCCESS");
 			} catch (ConstraintViolationException e) {
 				errors.add("The Company already exist!");
@@ -449,6 +455,9 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 
 		try {
 			String password=Utilities.generatePassword();
+			_user.setDateModified(new Date());
+		
+			
 			_user.setDateCreated(new Date());
 			_user.setStatus(USER_STATUS_ACTIVE);
 			//_user.setPassword(password);
@@ -527,7 +536,7 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 		return res;
 	}
 	
-	@Secured(ROLE_NIBSS_ADMINISTRATOR)
+	/*@Secured(ROLE_NIBSS_ADMINISTRATOR)
 	@RequestMapping(value="/user/reset",method=RequestMethod.POST)
 	public @ResponseBody String resetUser(HttpServletRequest request,@RequestParam("userId") Long userId) throws Exception{
 
@@ -540,6 +549,7 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 			
 			User user= userService.getUserById(userId);
 			user.setPassword(sha1PasswordEncoder.encodePassword(password, ""));
+			user.setStatus(USER_STATUS_ACTIVE);
 			user.setDateModified(new Date());
 			userService.updateUser(user);
 			Runnable r = ()->{
@@ -552,7 +562,7 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 			throw new Exception(e);
 		}
 		return res;
-	}
+	}*/
 
 
 	@Secured(ROLE_NIBSS_ADMINISTRATOR)
@@ -583,7 +593,7 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 	}
 
 
-	@Secured(ROLE_NIBSS_ADMINISTRATOR)
+	/*@Secured(ROLE_NIBSS_ADMINISTRATOR)
 	@RequestMapping(value="/user/delete",method=RequestMethod.POST)
 	public @ResponseBody String deleteNewUser(HttpServletRequest request,@RequestParam("userId") Long userId) throws Exception{
 
@@ -598,6 +608,34 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 			res=AJAX_FAILED;
 			throw new Exception(e);
 		} 
+		return res;
+	}*/
+	@Secured(ROLE_NIBSS_ADMINISTRATOR)
+	@RequestMapping(value="/user/delete",method=RequestMethod.POST)
+	public @ResponseBody String resetUser(HttpServletRequest request,@RequestParam("userId") Long userId) throws Exception{
+
+		String res="";
+		try {		
+			
+			String password=Utilities.generatePassword();			
+			
+			
+			
+			User user= userService.getUserById(userId);
+			user.setPassword(sha1PasswordEncoder.encodePassword(password, ""));
+			user.setStatus(USER_STATUS_ACTIVE);
+			user.setDateModified(new Date());
+			userService.updateUser(user);
+			user.setPassword(password);
+			Runnable r = ()->{
+				mailUtility.sendMail(MailType.RESET_USER_PASSWORD, user);
+			};
+			executor.execute(r);
+			res=AJAX_SUCCESS;	
+		} catch (Exception e) {
+			res=AJAX_FAILED;
+			throw new Exception(e);
+		}
 		return res;
 	}
 
@@ -825,5 +863,109 @@ public class NIBSSController extends BaseController implements WebAppConstants {
 		this.setBreadCrumb(breadCrumb, model);
 		return ("/nibss/transaction-billing");
 	}
-	
+	@RequestMapping(value = "/biller/getUnregisteredBillers", method = RequestMethod.GET, produces={"application/json"})
+	public @ResponseBody List<OptionBean> getUnregisteredBillers(@RequestParam(value = "billerName") String billerName, HttpServletRequest request) {
+		List<Company> companies = new ArrayList<>();
+
+		try {
+			companies=companyService.getAvailableCompanies(billerName);
+		} catch (ServerBusinessException e) {
+			logger.error(e);
+		}
+
+		List<OptionBean> options= new ArrayList<>();
+		companies.stream().forEach(e->{
+			options.add(new OptionBean(String.valueOf(e.getId()), e.getName()));
+		});
+
+		return options;
+		/*for(Account account:collectionAccounts){
+			;
+		}
+		return options;*/
+	}
+
+	@RequestMapping(value="/biller/add",method=RequestMethod.GET)
+	@Secured (value={ROLE_NIBSS_ADMINISTRATOR})
+	public ModelAndView addNewBiller(@ModelAttribute Biller biller,HttpServletRequest request, Model model){
+		ModelAndView mav = new ModelAndView();
+
+		mav.addObject("billers",billerService.getActiveBillers());
+		//mav.addObject("products",productService.getActiveProductsByBank(bankUser.getBank()));
+
+		this.setViewMainHeading("Create New Biller <small>Fill the form below to create a new Biller</small>",model);
+		this.setViewBoxHeading("Enter Biller Details",model);
+
+		List<OptionBean> breadCrumb= new ArrayList<>();
+		breadCrumb.add(new OptionBean("/nibss/biller/list", "Manage Billers"));
+		breadCrumb.add(new OptionBean("#", "Add New Biller"));
+		try {
+			List<Bank> banks=bankService.getAllBanks();
+			mav.addObject("banks", bankService.getAllBanks());
+			logger.info("Bank Size "+banks.size());
+		} catch (ServerBusinessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.setBreadCrumb(breadCrumb,model);
+
+		mav.addObject("biller", biller);
+		mav.setViewName("/nibss/add_biller");
+		return mav;		
+	}
+
+
+	@RequestMapping(value="/biller/add",method=RequestMethod.POST)
+	@Secured (value={ROLE_NIBSS_ADMINISTRATOR})
+	public ModelAndView saveNewProduct(HttpServletRequest request,
+			@ModelAttribute @Valid Biller biller,
+			BindingResult result,
+			Model model,final RedirectAttributes redirectAttributes, @Value("${slaAttachmentPath}") String slaAttachmentPath){
+
+		if (result.hasErrors())
+			return addNewBiller(biller, request, model);
+
+		ModelAndView mav= new ModelAndView();
+		String message = "An error has occured while creating the mandate. Please try later.";
+		String messageClass="danger";
+		mav.setViewName("redirect:/nibss/biller/add");
+
+		try {			
+			MultipartFile file= biller.getSlaAttachment();
+			if(file!=null){
+				File dest = new File(slaAttachmentPath);
+				if(!dest.exists())
+					dest.mkdirs();
+				String fileName=slaAttachmentPath+"/"+getCurrentUser(request).getId()+"."+System.currentTimeMillis()
+				+""+FilenameUtils.getExtension(file.getOriginalFilename());
+				file.transferTo(new File(fileName));
+				biller.setSlaAttachmentPath(fileName);
+			}
+
+			biller.setStatus(STATUS_ACTIVE);
+			//biller.setBank(getCurrentBankUser(request).getBank());
+			biller.setCreatedBy(getCurrentUser(request));
+			biller.setDateCreated(new Date());
+			
+			biller.setApiKey(sha1PasswordEncoder.encodePassword(Utilities.generatePassword(), ""));
+			biller.setBillerPassKey(sha1PasswordEncoder.encodePassword(Utilities.generatePassword(), ""));
+			biller.setBillerPassword(sha1PasswordEncoder.encodePassword(Utilities.generatePassword(), ""));
+			
+			biller=bankService.addNewBiller(biller);
+			message = String.format("New Biller <b>%s</b> was successfully created!",biller.getCompany().getName());
+			messageClass="success";
+			mav.setViewName("redirect:/nibss/biller/list");
+		} catch (ConstraintViolationException e) {
+			message = "Biller already exist!";
+			logger.error(e);
+		} catch (Exception e) {
+			message="An error has occurred while setting up the biller. please try later";
+			logger.error(e);
+		}
+		redirectAttributes.addFlashAttribute("message", message);   
+		redirectAttributes.addFlashAttribute("messageClass", messageClass);   
+
+		return mav;
+
+	}
 }

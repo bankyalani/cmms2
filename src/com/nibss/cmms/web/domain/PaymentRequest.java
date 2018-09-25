@@ -21,8 +21,16 @@ public class PaymentRequest{
 	@JsonProperty("paymentRequests")
 	@NotEmpty(message="At least one record is required")
 	private List<PaymentRequestDTO> paymentRequestBean;
+	@JsonProperty("batchId")
+	private String  batchId;
+	public String getBatchId() {
+		return batchId;
+	}
 
-	
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
+	}
+
 	public APIAuthentication getApiAuthentication() {
 		return apiAuthentication;
 	}

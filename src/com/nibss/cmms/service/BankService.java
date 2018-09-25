@@ -94,7 +94,8 @@ public class BankService {
 	@Transactional(readOnly=true)
 	public List<Bank> getAllBanks() throws ServerBusinessException{
 
-		return genericDAO.getList(Bank.class);
+		//return genericDAO.getList(Bank.class);
+		return genericDAO.getList(()->" from Bank b order by b.bankName");
 
 	}
 	

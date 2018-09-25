@@ -67,7 +67,9 @@ public class CompanyService {
 
 	@Transactional(readOnly=true)
 	public List<Company> getAllCompanies()  throws ServerBusinessException {
-		return genericDAO.getList(Company.class);
+		//return genericDAO.getList(Company.class);
+		
+		return genericDAO.getList(()->" from Company b order by b.name");
 	}
 
 	public Company addNewCompany(Company company) throws Exception {

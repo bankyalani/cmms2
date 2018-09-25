@@ -78,6 +78,7 @@ public class Mandate extends AbstractTimeStampEntity implements Serializable {
     
     private MandateStatus status;
     
+    //private MandateType mandateType;
     
     private User createdBy;
     
@@ -121,8 +122,21 @@ public class Mandate extends AbstractTimeStampEntity implements Serializable {
      */
     private int requestStatus;
     
+    private int bankNotified;
+    private int billerNotified;
+	@Column(nullable = true)
+	private String lastApiNotificationResponse;
 
-    /**
+    public String getLastApiNotificationResponse() {
+		return lastApiNotificationResponse;
+	}
+
+
+	public void setLastApiNotificationResponse(String lastApiNotificationResponse) {
+		this.lastApiNotificationResponse = lastApiNotificationResponse;
+	}
+
+	/**
      *
      *  1 -postpaid
      *  2- prepaid
@@ -130,14 +144,56 @@ public class Mandate extends AbstractTimeStampEntity implements Serializable {
      */
     private int serviceType;
     
+    
+    
+    /**
+    *
+    *  1 -Direct Debit mandate
+    *  2- Balance Enquiry Only
+    *  3- Fund Sweeping and Balance Enquiry
+    */
+    private String mandateType;
+    
     private boolean fixedAmountMandate;
     
-    private BigDecimal variableAmount;
+    public int getBankNotified() {
+		return bankNotified;
+	}
+
+
+	public void setBankNotified(int bankNotified) {
+		this.bankNotified = bankNotified;
+	}
+
+
+	public int getBillerNotified() {
+		return billerNotified;
+	}
+
+
+	public void setBillerNotified(int billerNotified) {
+		this.billerNotified = billerNotified;
+	}
+
+	private BigDecimal variableAmount;
     
     
-    public Mandate(){
+    public String getMandateType() {
+		return mandateType;
+	}
+
+
+	public void setMandateType(String mandateType) {
+		this.mandateType = mandateType;
+	}
+
+
+	public Mandate(){
     	this.requestStatus=WebAppConstants.STATUS_ACTIVE;
     	this.serviceType=WebAppConstants.SERVICE_TYPE_POSTPAID;
+    	this.bankNotified=0;
+    	this.billerNotified=0;
+    	this.mandateType="Direct Debit";
     }
     
 
@@ -330,6 +386,18 @@ public class Mandate extends AbstractTimeStampEntity implements Serializable {
 	public MandateStatus getStatus() {
 		return status;
 	}
+	
+
+	/*@ManyToOne(fetch = FetchType.LAZY)
+	public MandateType getMandateType() {
+		return mandateType;
+	}
+
+
+	public void setMandateType(MandateType mandateType) {
+		this.mandateType = mandateType;
+	}*/
+
 
 	public void setStatus(MandateStatus status) {
 		

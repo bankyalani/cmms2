@@ -22,7 +22,7 @@ var oTBExample2 = $("#tDataTable").DataTable({
 	 "columns":[
 				 { "data":null,"title": "S/N",defaultContent:"" },
 	             { "data": "mandateCode", "title": "Mandate Code"},
-	             { "data": "status\\.id", "title": "Workflow Status" },
+	             { "data": "status\\.id", "title": "Work Flow Status" },
 	             { "data": "lastActionBy", "title": "Last Action By"},
 	             { "data": "product\\.biller\\.id", "title": "Biller"},
 	             { "data": "subscriberCode", "title": "Biller Subscriber Reference"},
@@ -95,10 +95,18 @@ var oTBExample2 = $("#tDataTable").DataTable({
 			doSearch=true;
 		}
 			
-		if ($('#mandateStatus').val()) {
+		/*if ($('#mandateStatus').val()) {
 			searchT.column(2).search($('#mandateStatus').val());
 			doSearch=true;
-		}
+		}*/
+		//mandateStatus
+		var selManStatTab1 = $.trim($('#mandateStatus option:selected').val());
+		if (selManStatTab1) {
+			//alert('searching by mandate status : ' + selManStat);
+			searchT.column(2).search(selManStatTab1);
+			doSearch=true;
+		} 
+		
 		if ($('#mandateBank').val()) {
 			searchT.column(7).search($('#mandateBank').val());
 			doSearch=true;
@@ -107,8 +115,8 @@ var oTBExample2 = $("#tDataTable").DataTable({
 			searchT.column(4).search($('#biller').val());
 			doSearch = true;
 		}
-		if ($('#payerName').val()!="") {
-			searchT.column(17).search($('#payerName').val());
+		if ($('#payerName').val()) {
+			searchT.column(18).search($('#payerName').val());
 			doSearch=true;
 		}
 		
@@ -269,23 +277,30 @@ var oTBExample2 = $("#tDataTable").DataTable({
 			var doSearch = false;
 			if ($('#mandateCode_other').val()) {
 				searchT.column(1).search($('#mandateCode_other').val());
+				//console.log('searching by mandate code');
 				doSearch=true;
 			}
 			if ($('#subscriberCode_other').val()) {
 				searchT.column(4).search($('#subscriberCode_other').val());
+				//console.log('searching by subscriber code');
 				doSearch=true;
 			}
+			
+			var selManStat = $.trim($('#mandateStatus_other option:selected').val());
+			if (selManStat) {
+				//alert('searching by mandate status : ' + selManStat);
+				searchT.column(2).search(selManStat);
+				doSearch=true;
+			} //else
+				//alert('not searching by mandate status');
 				
-			if ($('#mandateStatus_other').val()) {
-				searchT.column(2).search($('#mandateStatus_other').val());
-				doSearch=true;
-			}
 			if ($('#mandateBank_other').val()) {
 				searchT.column(10).search($('#mandateBank_other').val());
 				doSearch=true;
 			}
-			if ($('#biller_other').val()) {
-				searchT.column(3).search($('#biller_other').val());
+			var selBiller = $.trim($('#biller_other option:selected').val());
+			if (selBiller) {
+				searchT.column(3).search(selBiller);
 				doSearch = true;
 			}
 			
@@ -392,7 +407,7 @@ var oTBExample2 = $("#tDataTable").DataTable({
 													id="subscriberCode" type="text" />
 											</div>
 											<div class="col-md-4 form-group">
-												<label for="status">Status</label> <select
+												<label for="mandateStatus">Status</label> <select
 													id="mandateStatus" name="mandateStatus"
 													class="form-control">
 													<option value="">--Select--</option>
@@ -490,8 +505,8 @@ var oTBExample2 = $("#tDataTable").DataTable({
 													id="subscriberCode_other" type="text" />
 											</div>
 											<div class="col-md-4 form-group">
-												<label for="status">Status</label> <select
-													id="mandateStatus_other" name="mandateStatus"
+												<label for="mandateStatus_other">Status</label> <select
+													id="mandateStatus_other" name="mandateStatus_other"
 													class="form-control">
 													<option value="">--Select--</option>
 													<c:forEach items="${mandateStatuses}" var="status">
@@ -503,8 +518,8 @@ var oTBExample2 = $("#tDataTable").DataTable({
 										</div>
 										<div class="row-fluid">
 											<div class="col-md-4 form-group">
-												<label for="biller">Biller</label> <select id="biller_other"
-													name="biller" class="form-control">
+												<label for="biller_other">Biller</label> <select id="biller_other"
+													name="biller_other" class="form-control">
 													<option value="">--Select--</option>
 													<c:forEach items="${bankBillers}" var="biller">
 														<option value="${biller.id }">

@@ -200,6 +200,9 @@ public class MandateValidator implements Validator {
 			try {
 				NESingleResponse nESingleResponse = nipService.sendNameEnquiry(nESingleRequest);
 				if(nESingleResponse.getResponseCode()==null || nESingleResponse.getResponseCode().equals("91")){
+					
+		
+					
 					errors.reject("accountNumber", "Unable to verify account information from bank");
 				}else{
 					if(nESingleResponse.getResponseCode().equals("00")){
@@ -215,6 +218,7 @@ public class MandateValidator implements Validator {
 					}
 				}
 			} catch (Exception e) {
+			
 				errors.reject("accountNumber", "Unable to verify account information from bank");
 				logger.error(null,e);
 			}

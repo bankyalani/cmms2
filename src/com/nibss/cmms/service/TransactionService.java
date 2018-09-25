@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nibss.cmms.dao.DataFilter;
 import com.nibss.cmms.dao.GenericDAO;
+import com.nibss.cmms.domain.APITransaction;
+import com.nibss.cmms.domain.Biller;
+import com.nibss.cmms.domain.Mandate;
 import com.nibss.cmms.domain.Transaction;
 import com.nibss.cmms.domain.TransactionParam;
 import com.nibss.cmms.utils.exception.domain.ServerBusinessException;
@@ -36,7 +39,7 @@ public class TransactionService {
 		return genericDAO.insert(t);
 	}
 	
-	
+	/*
 	@Transactional(readOnly=true)
 	public List<Transaction> getTransactions(final Map<String,Object> filters){
 		String query="from Transaction m where 1=1 ";
@@ -51,9 +54,62 @@ public class TransactionService {
 		}
 		query=query.concat(" order by m.id desc");
 		return genericDAO.getPaginatedList(query, params, null, null);
+	}*/
+	
+	
+	@Transactional(readOnly=true)
+	public List<Transaction> getTransactions(final Map<String,Object> filters) throws Exception{
+		String query="from Transaction m where 1=1 ";
+		Map<String,Object> params = new HashMap<String,Object>();
+		int i=0;
+		
+		if(filters!=null)
+		for(Map.Entry<String, Object> mapE:filters.entrySet()){
+			System.err.println(mapE.getKey());
+			if(mapE.getKey().equals("dateCreated")){
+				SimpleDateFormat df= new SimpleDateFormat("yyyyMMddHHmmss");
+				int x=i;
+				String[] paramValue=((String)mapE.getValue()).split("-");
+				query=query.concat(" and m."+mapE.getKey()+" between ?"+(x)+" and ?"+(x+1));
+				params.put(String.valueOf(x),df.parse(paramValue[0]));
+				params.put(String.valueOf(x+1),df.parse(paramValue[1]));
+				i=x+1;
+			}else{
+			query=query.concat(" and m."+mapE.getKey()+" = ?"+i);
+			params.put(String.valueOf(i),mapE.getValue());
+			}
+			i++;
+		}
+		query=query.concat(" order by m.id desc");
+		return genericDAO.getPaginatedList(query, params, null, null);
 	}
 
-
+	@Transactional(readOnly=true)
+	public List<APITransaction> getAPITransactions(final Map<String,Object> filters) throws Exception{
+		String query="from APITransaction m where 1=1 ";
+		Map<String,Object> params = new HashMap<String,Object>();
+		int i=0;
+		
+		if(filters!=null)
+		for(Map.Entry<String, Object> mapE:filters.entrySet()){
+			System.err.println(mapE.getKey());
+			if(mapE.getKey().equals("dateCreated")){
+				SimpleDateFormat df= new SimpleDateFormat("yyyyMMddHHmmss");
+				int x=i;
+				String[] paramValue=((String)mapE.getValue()).split("-");
+				query=query.concat(" and m."+mapE.getKey()+" between ?"+(x)+" and ?"+(x+1));
+				params.put(String.valueOf(x),df.parse(paramValue[0]));
+				params.put(String.valueOf(x+1),df.parse(paramValue[1]));
+				i=x+1;
+			}else{
+			query=query.concat(" and m."+mapE.getKey()+" = ?"+i);
+			params.put(String.valueOf(i),mapE.getValue());
+			}
+			i++;
+		}
+		query=query.concat(" order by m.id desc");
+		return genericDAO.getPaginatedList(query, params, null, null);
+	}
 	public void updateTransaction(Transaction t) {
 		genericDAO.update(t);
 	}
@@ -104,4 +160,13 @@ public class TransactionService {
 		query=query.concat(" order by t.id desc");
 		return genericDAO.getPaginatedList(query, params, startIndex, endIndex);
 	}
+	
+	@Transactional(readOnly=true)
+	public List<Transaction> getTransactionByMandate( Mandate mandate ) throws ServerBusinessException{
+
+		return genericDAO.getList(() -> "from Transaction p WHERE p.mandate=? order by p.id desc",
+				mandate);
+
+	}
+	
 }

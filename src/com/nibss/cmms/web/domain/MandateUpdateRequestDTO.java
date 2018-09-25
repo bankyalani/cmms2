@@ -48,15 +48,30 @@ public 	class MandateUpdateRequestDTO implements Serializable {
 		@Email(message="Email Address is not valid")
 		private String emailAddress; 
 		
-		@NotBlank(message="Status Id is mandatory")
-		private int statusId;
+		//@NotBlank(message="Status  is mandatory")
+		@NotNull(message="Status is required")
+		private int status;
 	
-		public int getStatusId() {
-			return statusId;
+		public int getStatus() {
+			return status;
 		}
 
-		public void setStatusId(int statusId) {
-			this.statusId = statusId;
+		public void setStatus(int status) {
+			this.status = status;
+		}
+		
+		//@NotBlank(message="Work Flow Status  is mandatory")
+		@NotNull(message="Work Flow Status is required")
+		private int workFlowStatus;
+	
+	
+
+		public int getWorkFlowStatus() {
+			return workFlowStatus;
+		}
+
+		public void setWorkFlowStatus(int workFlowStatus) {
+			this.workFlowStatus = workFlowStatus;
 		}
 
 		private String narration;

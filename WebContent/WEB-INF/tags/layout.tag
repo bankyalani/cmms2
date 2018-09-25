@@ -534,6 +534,8 @@
 											class="fa fa-angle-double-right"></i> Billers</a></li>
 									<li><a href="<c:url value="/nibss/company/list"/>"><i
 											class="fa fa-angle-double-right"></i> All Organizations</a></li>
+												<li><a href="<c:url value="/nibss/biller/add"/>"><i
+											class="fa fa-angle-double-right"></i> Add Billers</a></li>
 									<li><a
 										href="<c:url value="/nibss/notification/config/list"/>"><i
 											class="fa fa-angle-double-right"></i> Email Configuration</a></li>

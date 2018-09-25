@@ -24,10 +24,10 @@ public class PaymentStatusRequest implements Serializable{
 	@NotNull(message="Authentication is required")
 	private APIAuthentication apiAuthentication;
 	
-	@Valid
+	/*@Valid
 	@JsonProperty("mandateCodes")
 	@NotEmpty(message="At least one record is required")
-	private List<String> mandateCodes;
+	private List<String> mandateCodes;*/
 
 	
 	public APIAuthentication getApiAuthentication() {
@@ -38,13 +38,23 @@ public class PaymentStatusRequest implements Serializable{
 		this.apiAuthentication = apiAuthentication;
 	}
 
-	public List<String> getMandateCodes() {
+	private String batchId;
+
+	public String getBatchId() {
+		return batchId;
+	}
+
+	public void setBatchId(String batchId) {
+		this.batchId = batchId;
+	}
+	
+	/*public List<String> getMandateCodes() {
 		return mandateCodes;
 	}
 
 	public void setMandateCodes(List<String> mandateCodes) {
 		this.mandateCodes = mandateCodes;
-	}
+	}*/
 
 
 }

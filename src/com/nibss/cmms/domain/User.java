@@ -32,7 +32,7 @@ public class User extends AbstractTimeStampEntity implements Serializable {
 
 	private static final long serialVersionUID = 200900302301L;
 
-	// request id
+	//request id
 	protected Long id;
 
 	protected Byte status;
@@ -49,6 +49,7 @@ public class User extends AbstractTimeStampEntity implements Serializable {
 
 	protected Role role;
 	
+	@Column(name = "tokenId", nullable = true)
 	protected String tokenId;
 
 	@Column(name="user_type")

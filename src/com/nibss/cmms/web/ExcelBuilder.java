@@ -171,10 +171,11 @@ public class ExcelBuilder extends AbstractExcelView implements WebAppConstants {
 			HttpServletResponse response) throws Exception{
 		List<TransactionResponse> transactionResponses =(List<TransactionResponse>)model.get(TRANSACTION_STATUS);
 		List<Transaction> transactions= (List<Transaction>)model.get(REPORT_DATA);
+		 String billerName= (String)model.get("Biller_Name");
 		// create a new Excel sheet
-		HSSFSheet sheet = hssfWorkbook.createSheet("Mandates");
+		HSSFSheet sheet = hssfWorkbook.createSheet("Mandates  "+billerName);
 		sheet.setDefaultColumnWidth(30);
-
+	
 Log.info("Transaction Size  "+ transactions.size());
 		CellStyle style=applyDefaultStyle(hssfWorkbook);
 
@@ -186,6 +187,7 @@ Log.info("Transaction Size  "+ transactions.size());
 			HSSFRow aRow = sheet.createRow(index+1);
 			int i=0;
 			aRow.createCell(i++).setCellValue(transactions.get(index).getMandate().getMandateCode());
+			aRow.createCell(i++).setCellValue(transactions.get(index).getMandate().getProduct().getBiller().getCompany().getName());
 			aRow.createCell(i++).setCellValue(transactions.get(index).getMandate().getSubscriberCode());
 			aRow.createCell(i++).setCellValue(transactions.get(index).getMandate().getAccountNumber());
 			aRow.createCell(i++).setCellValue(transactions.get(index).getMandate().getAccountName());
@@ -220,6 +222,7 @@ Log.info("Transaction Size  "+ transactions.size());
 
 		String[] transactionReportHeaders= new String[]{
 				"Mandate Code",
+				"Biller Name",
 				"Subscriber Mandate Code",
 				"Account Number",
 				"Account Name",

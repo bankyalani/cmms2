@@ -1,5 +1,6 @@
 package com.nibss.cmms.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,6 +10,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.DateType;
+import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,10 +54,8 @@ public class HibernateDAOImpl implements GenericDAO {
 		Query queryObject = getCurrentSession().createQuery(
 				dataFilter.applyFilter());
 
-		for(int i=0;i<a.length;i++){	
-
+		for(int i=0;i<a.length;i++){
 			queryObject.setParameter(i, a[i]);
-
 		}
 		return (List<T>) queryObject.list();
 

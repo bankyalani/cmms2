@@ -19,7 +19,7 @@ public class PaymentRequestDTO implements Serializable {
 	private static final long serialVersionUID = 3013818701877111974L;
 	
 
-	@Pattern(regexp = "\\w*/[0-9]{3}/[0-9]{10}",message="Invalid Mandate Code")
+	//@Pattern(regexp = "\\w*/[0-9]{3}/[0-9]{10}",message="Invalid Mandate Code")
 	@NotBlank(message="Mandate Code is mandatory")
 	private String mandateCode;
 	

@@ -58,12 +58,32 @@ public class Transaction  implements Serializable{
 	@OrderBy(clause="id DESC")
 	private Set<TransactionParam> transactionParam=new HashSet<>();
 	
+	private int numberOfCreditTrials;
+	
+	public int getNumberOfCreditTrials() {
+		return numberOfCreditTrials;
+	}
+
+	public void setNumberOfCreditTrials(int numberOfCreditTrials) {
+		this.numberOfCreditTrials = numberOfCreditTrials;
+	}
+
 	private int numberOfTrials;
 	
 	private Date dateCreated;
 	
 	private Date lastDebitDate;
+	
+	private Date lastCreditDate;
 		
+	public Date getLastCreditDate() {
+		return lastCreditDate;
+	}
+
+	public void setLastCreditDate(Date lastCreditDate) {
+		this.lastCreditDate = lastCreditDate;
+	}
+
 	private int status;
 
 	public Long getId() {

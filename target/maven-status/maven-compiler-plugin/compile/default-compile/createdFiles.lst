@@ -21,6 +21,7 @@ com\nibss\cmms\web\JQueryDataTableColumn.class
 com\nibss\nfp\webservice\MandateAdviceRequest.class
 com\nibss\cmms\domain\User.class
 com\nibss\cmms\service\WebserviceNotificationService.class
+com\nibss\cmms\common\ResponseCodeEnum.class
 com\nibss\cmms\utils\exception\IErrorCodes.class
 com\nibss\cmms\web\validation\BillerValidator.class
 com\nibss\cmms\service\TransactionService.class
@@ -45,9 +46,11 @@ com\nibss\cmms\web\validation\ProductValidator.class
 com\nibss\cmms\utils\exception\SystemException.class
 com\nibss\cmms\utils\exception\domain\ServerBusinessException.class
 com\nibss\cmms\web\domain\MandateResponse.class
+com\nibss\cmms\domain\MandateType.class
 com\nibss\cmms\utils\FileUtility.class
 com\nibss\nfp\webservice\NIPInterface_Service.class
 com\nibss\cmms\service\BillingTransactionService.class
+com\nibss\cmms\utils\NotificationUtils.class
 com\nibss\cmms\web\domain\FileAttachment.class
 com\nibss\cmms\web\domain\CompanyTable.class
 com\nibss\cmms\domain\MandateStatus.class
@@ -121,6 +124,7 @@ com\nibss\cmms\utils\ExcelUtility$ExcelType.class
 com\nibss\cmms\domain\WebserviceNotification.class
 com\nibss\cmms\web\converters\IndustryEditor.class
 com\nibss\cmms\utils\exception\domain\ObjectNotFoundException.class
+com\nibss\cmms\app\service\RestClient.class
 com\nibss\cmms\web\converters\BillerEditor.class
 com\nibss\cmms\web\domain\APIAuthentication.class
 com\nibss\cmms\web\domain\MandateNotificationRequestDTO.class
@@ -132,6 +136,7 @@ com\nibss\cmms\app\service\ApplicationService.class
 com\nibss\cmms\web\JQueryDataTableRequest.class
 com\nibss\cmms\domain\Company.class
 com\nibss\cmms\web\domain\MandateTable.class
+com\nibss\cmms\web\domain\MandateRequestAll.class
 com\nibss\cmms\service\BillerService.class
 com\nibss\cmms\web\domain\MandateNotificationRequest.class
 com\nibss\cmms\web\controllers\ApplicationAPI.class

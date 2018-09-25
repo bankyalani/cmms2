@@ -153,7 +153,7 @@ public class DateUtils {
 
 	}
 
-	public static Date calculateNextDebitDate(Date startDate,Date endDate, int weekFrequency){
+	public synchronized static Date calculateNextDebitDate(Date startDate,Date endDate, int weekFrequency){
 		Date nextDebitDate=null;
 		final Calendar startCalendar = Calendar.getInstance();
 		startCalendar.setTime(nullifyTime(startDate));

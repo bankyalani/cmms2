@@ -116,6 +116,10 @@
 			<task:scheduled ref="applicationService" method="firstTransactionPostingRetry" cron="${first.transaction.retry.cron}" ></task:scheduled>
 			<task:scheduled ref="applicationService" method="secondTransactionPostingRetry" cron="${second.transaction.retry.cron}" ></task:scheduled>
 			
+			<!-- Notification schedules -->
+			<task:scheduled ref="applicationService" method="pushFreshMandatesToBanks" cron="${mandate.notification.bank.cron}" ></task:scheduled>
+			<task:scheduled ref="applicationService" method="pushFreshMandatesToBillers" cron="${mandate.notification.biller.cron}" ></task:scheduled>
+			
 			
 	</task:scheduled-tasks>
 	<task:scheduler id="taskScheduler" pool-size="10"/>

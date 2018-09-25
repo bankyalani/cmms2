@@ -14,6 +14,26 @@ public class MandateResponse implements Serializable {
 
 	private String mandateCode;
 	
+	private String subscriberCode;
+	
+	private String phoneNumber;
+	
+	public String getSubscriberCode() {
+		return subscriberCode;
+	}
+
+	public void setSubscriberCode(String subscriberCode) {
+		this.subscriberCode = subscriberCode;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
 	private String responseDescription;
 
 	public String getResponseCode() {
